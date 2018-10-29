@@ -1,5 +1,7 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.bitio;
 
+import ro.ulbsibiu.ccsd.laboratory.robert.bitio.exception.EmptyBufferException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -11,7 +13,7 @@ public class BitReader {
         this.inputStream = inputStream;
     }
 
-    public boolean readBit() throws IOException {
+    public boolean readBitAsBoolean() throws IOException {
         boolean bit;
         try {
             bit = buffer.nextBit();
@@ -22,11 +24,23 @@ public class BitReader {
         return bit;
     }
 
-    public boolean[] readNBits(int nrBits) throws IOException {
+    public int readBitAsInt() throws IOException {
+        return readBitAsBoolean() ? 1 : 0;
+    }
+
+    public boolean[] readNBitsAsBooleanArray(int nrBits) throws IOException {
         boolean[] bits = new boolean[nrBits];
         for (int i = 0; i < nrBits; i++) {
-            bits[i] = readBit();
+            bits[i] = readBitAsBoolean();
         }
         return bits;
+    }
+
+    public long readNBitValue(int n) throws IOException {
+        long nBitValue = 0;
+        for (int i = 0; i < n; i++) {
+            nBitValue |= (readBitAsInt() << i);
+        }
+        return nBitValue;
     }
 }

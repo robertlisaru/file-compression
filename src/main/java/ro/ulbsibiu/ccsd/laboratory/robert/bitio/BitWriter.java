@@ -1,5 +1,7 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.bitio;
 
+import ro.ulbsibiu.ccsd.laboratory.robert.bitio.exception.FullBufferException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -20,9 +22,19 @@ public class BitWriter {
         }
     }
 
+    public void writeBit(int bit) throws IOException {
+        writeBit(bit != 0);
+    }
+
     public void writeNBits(int nrBits, boolean[] bits) throws IOException {
         for (int i = 0; i < nrBits; i++) {
             writeBit(bits[i]);
+        }
+    }
+
+    public void writeNBitValue(long value, int n) throws IOException {
+        for (int i = 0; i < n; i++) {
+            writeBit((int) ((value >> i) & 1));
         }
     }
 
