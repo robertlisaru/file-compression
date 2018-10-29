@@ -1,5 +1,7 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.bitio;
 
+import ro.ulbsibiu.ccsd.laboratory.robert.bitio.exception.FullBufferException;
+
 public class WriteBuffer {
     private boolean[] bits = new boolean[8];
     private int pos = 0;

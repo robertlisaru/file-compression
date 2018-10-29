@@ -1,5 +1,7 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.bitio;
 
+import ro.ulbsibiu.ccsd.laboratory.robert.bitio.exception.EmptyBufferException;
+
 import java.util.Arrays;
 
 public class ReadBuffer {
