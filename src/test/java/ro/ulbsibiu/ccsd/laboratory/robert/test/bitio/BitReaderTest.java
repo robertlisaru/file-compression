@@ -18,8 +18,8 @@ public class BitReaderTest {
     BitReader bitReader;
 
     @BeforeEach
-    void arrange() {
-        bytes = new byte[]{1, 2, 3, 4, 5};
+    void init() {
+        bytes = new byte[]{0b00000001, 0b00000010, 0b00000011, 0b00000100, 0b00000101};
         inputStream = new ByteArrayInputStream(bytes);
         bitReader = new BitReader(inputStream);
     }
@@ -27,17 +27,17 @@ public class BitReaderTest {
     @Test
     void nextBit() {
         try {
-            assertTrue(bitReader.readBit());
-            assertFalse(bitReader.readBit());
-            assertFalse(bitReader.readBit());
-            assertFalse(bitReader.readBit());
-            assertFalse(bitReader.readBit());
-            assertFalse(bitReader.readBit());
-            assertFalse(bitReader.readBit());
-            assertFalse(bitReader.readBit());
+            assertTrue(bitReader.readBitAsBoolean());
+            assertFalse(bitReader.readBitAsBoolean());
+            assertFalse(bitReader.readBitAsBoolean());
+            assertFalse(bitReader.readBitAsBoolean());
+            assertFalse(bitReader.readBitAsBoolean());
+            assertFalse(bitReader.readBitAsBoolean());
+            assertFalse(bitReader.readBitAsBoolean());
+            assertFalse(bitReader.readBitAsBoolean());
 
-            assertFalse(bitReader.readBit());
-            assertTrue(bitReader.readBit());
+            assertFalse(bitReader.readBitAsBoolean());
+            assertTrue(bitReader.readBitAsBoolean());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,7 +47,7 @@ public class BitReaderTest {
     void readNBits() {
         boolean[] bits;
         try {
-            bits = bitReader.readNBits(12);
+            bits = bitReader.readNBitsAsBooleanArray(12);
             assertEquals(12, bits.length);
             for (int i = 0; i < 12; i++) {
                 assertEquals((bytes[i / 8] & (1 << i % 8)) == (1 << i % 8), bits[i]);
@@ -55,5 +55,17 @@ public class BitReaderTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    void readNBitValue() {
+        try {
+            assertEquals((long) 0b1000000001, bitReader.readNBitValue(10));
+            assertEquals((long) 0b000000, bitReader.readNBitValue(6));
+            assertEquals((long) 3, bitReader.readNBitValue(2));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -2,8 +2,8 @@ package ro.ulbsibiu.ccsd.laboratory.robert.test.bitio;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ro.ulbsibiu.ccsd.laboratory.robert.bitio.FullBufferException;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.WriteBuffer;
+import ro.ulbsibiu.ccsd.laboratory.robert.bitio.exception.FullBufferException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,7 +14,7 @@ public class WriteBufferTest {
     WriteBuffer writeBuffer;
 
     @BeforeEach
-    void arrange() {
+    void init() {
         writeBuffer = new WriteBuffer();
     }
 

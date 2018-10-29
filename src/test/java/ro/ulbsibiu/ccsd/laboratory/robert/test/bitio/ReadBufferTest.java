@@ -3,7 +3,7 @@ package ro.ulbsibiu.ccsd.laboratory.robert.test.bitio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ro.ulbsibiu.ccsd.laboratory.robert.bitio.EmptyBufferException;
+import ro.ulbsibiu.ccsd.laboratory.robert.bitio.exception.EmptyBufferException;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.ReadBuffer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +15,7 @@ class ReadBufferTest {
     ReadBuffer buffer;
 
     @BeforeEach
-    void arrange() {
+    void init() {
         buffer = new ReadBuffer();
     }
 
