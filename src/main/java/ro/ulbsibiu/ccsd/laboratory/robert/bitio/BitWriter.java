@@ -1,7 +1,5 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.bitio;
 
-import ro.ulbsibiu.ccsd.laboratory.robert.bitio.exception.FullBufferException;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -14,12 +12,10 @@ public class BitWriter {
     }
 
     public void writeBit(boolean bit) throws IOException {
-        try {
-            buffer.putBit(bit);
-        } catch (FullBufferException fbe) {
+        if (buffer.isFull()) {
             outputStream.write(buffer.getByteAndClear());
-            buffer.putBit(bit);
         }
+        buffer.putBit(bit);
     }
 
     public void writeBit(int bit) throws IOException {
@@ -40,5 +36,6 @@ public class BitWriter {
 
     public void flush() throws IOException {
         outputStream.write(buffer.getByteAndClear());
+        outputStream.flush();
     }
 }
