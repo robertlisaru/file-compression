@@ -11,21 +11,11 @@ public class BitWriter {
         this.outputStream = outputStream;
     }
 
-    public void writeBit(boolean bit) throws IOException {
+    public void writeBit(int bit) throws IOException {
         if (buffer.isFull()) {
             outputStream.write(buffer.getByteAndClear());
         }
         buffer.putBit(bit);
-    }
-
-    public void writeBit(int bit) throws IOException {
-        writeBit(bit != 0);
-    }
-
-    public void writeNBits(int nrBits, boolean[] bits) throws IOException {
-        for (int i = 0; i < nrBits; i++) {
-            writeBit(bits[i]);
-        }
     }
 
     public void writeNBitValue(long value, int n) throws IOException {

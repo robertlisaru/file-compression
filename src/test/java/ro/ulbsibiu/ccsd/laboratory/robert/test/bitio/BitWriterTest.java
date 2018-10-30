@@ -20,7 +20,7 @@ public class BitWriterTest {
     }
 
     @Test
-    void writeBitAsIntAndFlush() {
+    void writeBitAndFlush() {
         int[] bits = new int[]{1, 1, 0, 0, 1, 1, 0};
 
         try {
@@ -35,38 +35,6 @@ public class BitWriterTest {
         byte[] bytes = outputStream.toByteArray();
         for (int i = 0; i < bits.length; i++) {
             assertEquals(((bytes[i / 8] & (1 << i % 8)) == (1 << i % 8)) ? 1 : 0, bits[i]);
-        }
-    }
-
-    @Test
-    void writeBitAsBooleanAndFlush() {
-        boolean[] bits = new boolean[]{true, true, false, false, true, true, false};
-        try {
-            for (int i = 0; i < bits.length; i++) {
-                bitWriter.writeBit(bits[i]);
-            }
-            bitWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] bytes = outputStream.toByteArray();
-        for (int i = 0; i < bits.length; i++) {
-            assertEquals((bytes[i / 8] & (1 << i % 8)) == (1 << i % 8), bits[i]);
-        }
-    }
-
-    @Test
-    void writeNBitsAndFlush() {
-        boolean[] bits = new boolean[]{true, true, false, false, true, true, false, true, false, false, false};
-        try {
-            bitWriter.writeNBits(bits.length, bits);
-            bitWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] bytes = outputStream.toByteArray();
-        for (int i = 0; i < bits.length; i++) {
-            assertEquals((bytes[i / 8] & (1 << i % 8)) == (1 << i % 8), bits[i]);
         }
     }
 

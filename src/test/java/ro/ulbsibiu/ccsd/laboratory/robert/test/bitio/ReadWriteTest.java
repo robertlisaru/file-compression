@@ -29,7 +29,7 @@ public class ReadWriteTest {
         inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         bitReader = new BitReader(inputStream);
         assertEquals(10, bitReader.readNBitValue(6));
-        assertEquals(1, bitReader.readBitAsInt());
+        assertEquals(1, bitReader.readBit());
         assertEquals(11, bitReader.readNBitValue(6));
     }
 }

@@ -11,29 +11,17 @@ public class BitReader {
         this.inputStream = inputStream;
     }
 
-    public boolean readBitAsBoolean() throws IOException {
+    public int readBit() throws IOException {
         if (buffer.isEmpty()) {
             buffer.refill((byte) inputStream.read());
         }
         return buffer.nextBit();
     }
 
-    public int readBitAsInt() throws IOException {
-        return readBitAsBoolean() ? 1 : 0;
-    }
-
-    public boolean[] readNBitsAsBooleanArray(int nrBits) throws IOException {
-        boolean[] bits = new boolean[nrBits];
-        for (int i = 0; i < nrBits; i++) {
-            bits[i] = readBitAsBoolean();
-        }
-        return bits;
-    }
-
     public long readNBitValue(int n) throws IOException {
         long nBitValue = 0;
         for (int i = 0; i < n; i++) {
-            nBitValue |= (readBitAsInt() << i);
+            nBitValue |= (readBit() << i);
         }
         return nBitValue;
     }
