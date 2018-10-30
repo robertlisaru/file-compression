@@ -23,8 +23,9 @@ public class Main {
             final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
             final BitReader bitReader = new BitReader(inputStream);
             final BitWriter bitWriter = new BitWriter(outputStream);
-            for (int i = 0; i < inputFile.length(); i++) {
-                bitWriter.writeNBitValue(bitReader.readNBitValue(8),8);
+            long fileLengthInBits = inputFile.length() * 8;
+            for (int i = 0; i < fileLengthInBits; i++) {
+                bitWriter.writeBit(bitReader.readBit());
             }
             bitWriter.flush();
         } catch (IOException e) {
