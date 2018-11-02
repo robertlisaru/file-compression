@@ -3,8 +3,10 @@ package ro.ulbsibiu.ccsd.laboratory.robert.test.encryption.huffman;
 import org.junit.jupiter.api.Test;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
-import ro.ulbsibiu.ccsd.laboratory.robert.encryption.huffman.HuffmanFileHeaderBuilder;
-import ro.ulbsibiu.ccsd.laboratory.robert.encryption.huffman.HuffmanFileHeaderReader;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticFileHeader;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticFileHeaderBuilder;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticFileHeaderReader;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.SymbolCounter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,8 +17,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HuffmanHeaderTest {
-    HuffmanFileHeaderBuilder fileHeaderBuilder;
-    HuffmanFileHeaderReader fileHeaderReader;
+    HuffmanStaticFileHeaderBuilder fileHeaderBuilder;
+    HuffmanStaticFileHeaderReader fileHeaderReader;
 
     @Test
     void computeWriteThenReadHeader() throws IOException {
@@ -26,19 +28,19 @@ public class HuffmanHeaderTest {
         histogram['F'] = 256;
         histogram['I'] = 255;
         histogram['K'] = 1;
-        HuffmanFileHeaderBuilder.CounterSize[] expectedCounterSizes = new HuffmanFileHeaderBuilder.CounterSize[256];
-        Arrays.fill(expectedCounterSizes, HuffmanFileHeaderBuilder.CounterSize.NU_SE_REPREZINTA);
-        expectedCounterSizes['A'] = HuffmanFileHeaderBuilder.CounterSize.SE_REPREZINTA_PE_4_OCTETI;
-        expectedCounterSizes['D'] = HuffmanFileHeaderBuilder.CounterSize.SE_REPREZINTA_PE_2_OCTETI;
-        expectedCounterSizes['F'] = HuffmanFileHeaderBuilder.CounterSize.SE_REPREZINTA_PE_2_OCTETI;
-        expectedCounterSizes['I'] = HuffmanFileHeaderBuilder.CounterSize.SE_REPREZINTA_PE_1_OCTET;
-        expectedCounterSizes['K'] = HuffmanFileHeaderBuilder.CounterSize.SE_REPREZINTA_PE_1_OCTET;
-        expectedCounterSizes['B'] = HuffmanFileHeaderBuilder.CounterSize.NU_SE_REPREZINTA;
-        expectedCounterSizes['C'] = HuffmanFileHeaderBuilder.CounterSize.NU_SE_REPREZINTA;
-        expectedCounterSizes['Z'] = HuffmanFileHeaderBuilder.CounterSize.NU_SE_REPREZINTA;
+        HuffmanStaticFileHeader.CounterCode[] expectedCounterSizes = new HuffmanStaticFileHeader.CounterCode[256];
+        Arrays.fill(expectedCounterSizes, HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA);
+        expectedCounterSizes['A'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_4_OCTETI;
+        expectedCounterSizes['D'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_2_OCTETI;
+        expectedCounterSizes['F'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_2_OCTETI;
+        expectedCounterSizes['I'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_1_OCTET;
+        expectedCounterSizes['K'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_1_OCTET;
+        expectedCounterSizes['B'] = HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA;
+        expectedCounterSizes['C'] = HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA;
+        expectedCounterSizes['Z'] = HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA;
 
-        fileHeaderBuilder = new HuffmanFileHeaderBuilder(histogram);
-        HuffmanFileHeaderBuilder.CounterSize[] actualCounterSizes = fileHeaderBuilder.computeCounterSizes();
+        fileHeaderBuilder = new HuffmanStaticFileHeaderBuilder(histogram);
+        HuffmanStaticFileHeader.CounterCode[] actualCounterSizes = fileHeaderBuilder.computeCounterCodes();
         for (int i = 0; i < 256; i++) {
             assertEquals(expectedCounterSizes[i], actualCounterSizes[i]);
         }
@@ -49,7 +51,7 @@ public class HuffmanHeaderTest {
         bitWriter.flush();
 
 
-        fileHeaderReader = new HuffmanFileHeaderReader();
+        fileHeaderReader = new HuffmanStaticFileHeaderReader();
         BitReader bitReader = new BitReader(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
         actualCounterSizes = fileHeaderReader.readCounterSizes(bitReader);
         for (int i = 0; i < 256; i++) {
@@ -71,7 +73,7 @@ public class HuffmanHeaderTest {
         expectedHistogram['C'] = 3;
         expectedHistogram['D'] = 3;
         expectedHistogram['E'] = 2;
-        fileHeaderBuilder = new HuffmanFileHeaderBuilder();
+        fileHeaderBuilder = new HuffmanStaticFileHeaderBuilder();
         int[] actualHistogram = fileHeaderBuilder.computeHistogram(new ByteArrayInputStream(bytes));
         for (int i = 0; i < 256; i++) {
             assertEquals(expectedHistogram[i], actualHistogram[i]);
@@ -86,13 +88,13 @@ public class HuffmanHeaderTest {
         histogram['C'] = 3;
         histogram['D'] = 3;
         histogram['E'] = 2;
-        fileHeaderBuilder = new HuffmanFileHeaderBuilder(histogram);
-        List<HuffmanFileHeaderBuilder.ByteCounter> trimmedHistogram = fileHeaderBuilder.trimAndSortHistogram();
+        fileHeaderBuilder = new HuffmanStaticFileHeaderBuilder(histogram);
+        List<SymbolCounter> trimmedHistogram = fileHeaderBuilder.trimAndSortHistogram();
         assertEquals(5, trimmedHistogram.size());
-        assertEquals(new HuffmanFileHeaderBuilder.ByteCounter('A', 1), trimmedHistogram.get(0));
-        assertEquals(new HuffmanFileHeaderBuilder.ByteCounter('B', 1), trimmedHistogram.get(1));
-        assertEquals(new HuffmanFileHeaderBuilder.ByteCounter('E', 2), trimmedHistogram.get(2));
-        assertEquals(new HuffmanFileHeaderBuilder.ByteCounter('C', 3), trimmedHistogram.get(3));
-        assertEquals(new HuffmanFileHeaderBuilder.ByteCounter('D', 3), trimmedHistogram.get(4));
+        assertEquals(new SymbolCounter('A', 1), trimmedHistogram.get(0));
+        assertEquals(new SymbolCounter('B', 1), trimmedHistogram.get(1));
+        assertEquals(new SymbolCounter('E', 2), trimmedHistogram.get(2));
+        assertEquals(new SymbolCounter('C', 3), trimmedHistogram.get(3));
+        assertEquals(new SymbolCounter('D', 3), trimmedHistogram.get(4));
     }
 }

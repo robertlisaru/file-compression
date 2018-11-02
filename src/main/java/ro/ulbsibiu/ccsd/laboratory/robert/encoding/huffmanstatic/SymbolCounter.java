@@ -1,4 +1,4 @@
-package ro.ulbsibiu.ccsd.laboratory.robert.encryption.huffman;
+package ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,24 +17,24 @@ public class SymbolCounter implements Comparable {
         this.count = count;
     }
 
+    public static SymbolCounter merge(SymbolCounter symbolCounter1, SymbolCounter symbolCounter2) {
+        List<Integer> mergedSymbols = new ArrayList<>();
+        for (Integer i : symbolCounter2.symbols) {
+            mergedSymbols.add(i);
+        }
+        for (Integer i : symbolCounter1.symbols) {
+            mergedSymbols.add(i);
+        }
+        int totalCount = symbolCounter2.count + symbolCounter1.count;
+        return new SymbolCounter(mergedSymbols, totalCount);
+    }
+
     public List<Integer> getSymbols() {
         return symbols;
     }
 
     public int getCount() {
         return count;
-    }
-
-    public SymbolCounter mergeWith(SymbolCounter otherSymbolCounter) {
-        List<Integer> mergedSymbols = new ArrayList<>();
-        for (Integer i : symbols) {
-            mergedSymbols.add(i);
-        }
-        for (Integer i : otherSymbolCounter.symbols) {
-            mergedSymbols.add(i);
-        }
-        int totalCount = count + otherSymbolCounter.count;
-        return new SymbolCounter(mergedSymbols, totalCount);
     }
 
     @Override
