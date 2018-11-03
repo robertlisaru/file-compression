@@ -50,4 +50,8 @@ public class HuffmanStaticEncoder {
             readByte = inputStream.read();
         }
     }
+
+    public void flush() throws IOException {
+        bitWriter.flush();
+    }
 }
