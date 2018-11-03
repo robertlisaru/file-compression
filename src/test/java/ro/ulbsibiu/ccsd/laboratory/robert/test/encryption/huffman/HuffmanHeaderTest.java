@@ -3,8 +3,8 @@ package ro.ulbsibiu.ccsd.laboratory.robert.test.encryption.huffman;
 import org.junit.jupiter.api.Test;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticFileHeader;
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticFileHeaderBuilder;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticFileHeaderProcessor;
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticFileHeaderReader;
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.SymbolCounter;
 
@@ -22,25 +22,25 @@ public class HuffmanHeaderTest {
 
     @Test
     void computeWriteThenReadHeader() throws IOException {
-        int[] histogram = new int[256]; //{65536, 65535, 256, 255, 1, 0};
+        int[] histogram = new int[256];
         histogram['A'] = 65536;
         histogram['D'] = 65535;
         histogram['F'] = 256;
         histogram['I'] = 255;
         histogram['K'] = 1;
-        HuffmanStaticFileHeader.CounterCode[] expectedCounterSizes = new HuffmanStaticFileHeader.CounterCode[256];
-        Arrays.fill(expectedCounterSizes, HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA);
-        expectedCounterSizes['A'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_4_OCTETI;
-        expectedCounterSizes['D'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_2_OCTETI;
-        expectedCounterSizes['F'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_2_OCTETI;
-        expectedCounterSizes['I'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_1_OCTET;
-        expectedCounterSizes['K'] = HuffmanStaticFileHeader.CounterCode.SE_REPREZINTA_PE_1_OCTET;
-        expectedCounterSizes['B'] = HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA;
-        expectedCounterSizes['C'] = HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA;
-        expectedCounterSizes['Z'] = HuffmanStaticFileHeader.CounterCode.NU_SE_REPREZINTA;
+        HuffmanStaticFileHeaderProcessor.CounterCode[] expectedCounterSizes = new HuffmanStaticFileHeaderProcessor.CounterCode[256];
+        Arrays.fill(expectedCounterSizes, HuffmanStaticFileHeaderProcessor.CounterCode.NU_SE_REPREZINTA);
+        expectedCounterSizes['A'] = HuffmanStaticFileHeaderProcessor.CounterCode.SE_REPREZINTA_PE_4_OCTETI;
+        expectedCounterSizes['D'] = HuffmanStaticFileHeaderProcessor.CounterCode.SE_REPREZINTA_PE_2_OCTETI;
+        expectedCounterSizes['F'] = HuffmanStaticFileHeaderProcessor.CounterCode.SE_REPREZINTA_PE_2_OCTETI;
+        expectedCounterSizes['I'] = HuffmanStaticFileHeaderProcessor.CounterCode.SE_REPREZINTA_PE_1_OCTET;
+        expectedCounterSizes['K'] = HuffmanStaticFileHeaderProcessor.CounterCode.SE_REPREZINTA_PE_1_OCTET;
+        expectedCounterSizes['B'] = HuffmanStaticFileHeaderProcessor.CounterCode.NU_SE_REPREZINTA;
+        expectedCounterSizes['C'] = HuffmanStaticFileHeaderProcessor.CounterCode.NU_SE_REPREZINTA;
+        expectedCounterSizes['Z'] = HuffmanStaticFileHeaderProcessor.CounterCode.NU_SE_REPREZINTA;
 
         fileHeaderBuilder = new HuffmanStaticFileHeaderBuilder(histogram);
-        HuffmanStaticFileHeader.CounterCode[] actualCounterSizes = fileHeaderBuilder.computeCounterCodes();
+        HuffmanStaticFileHeaderProcessor.CounterCode[] actualCounterSizes = fileHeaderBuilder.computeCounterCodes();
         for (int i = 0; i < 256; i++) {
             assertEquals(expectedCounterSizes[i], actualCounterSizes[i]);
         }
@@ -61,6 +61,8 @@ public class HuffmanHeaderTest {
         for (int i = 0; i < 256; i++) {
             assertEquals(histogram[i], actualHistogram[i]);
         }
+
+        assertEquals(131583, fileHeaderReader.getTotalByteCount());
 
     }
 

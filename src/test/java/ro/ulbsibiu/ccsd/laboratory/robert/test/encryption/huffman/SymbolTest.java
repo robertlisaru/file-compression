@@ -18,7 +18,11 @@ public class SymbolTest {
 
         symbol.addBit(1);
         assertEquals(2, symbol.getSizeInBits());
-        assertEquals(2, symbol.getCode());
+        assertEquals(1, symbol.getCode());
+
+        symbol.addBit(1);
+        assertEquals(3, symbol.getSizeInBits());
+        assertEquals(3, symbol.getCode());
     }
 
     @Test

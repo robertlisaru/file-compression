@@ -31,7 +31,8 @@ public class Symbol {
         if (bit != 0 && bit != 1) {
             throw new InvalidParameterException("a bit can only be 0 or 1");
         }
-        code |= (bit << sizeInBits++);
+        code = (code << 1) | bit;
+        sizeInBits++;
     }
 
     @Override

@@ -4,9 +4,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HuffmanStaticFileHeader {
+public class HuffmanStaticFileHeaderProcessor {
     protected int[] histogram;
     protected CounterCode[] counterCodes;
+
+    protected HuffmanStaticFileHeaderProcessor() {
+    }
 
     public List<SymbolCounter> trimAndSortHistogram() {
         if (histogram == null) {

@@ -4,7 +4,7 @@ import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 
 import java.io.IOException;
 
-public class HuffmanStaticFileHeaderReader extends HuffmanStaticFileHeader {
+public class HuffmanStaticFileHeaderReader extends HuffmanStaticFileHeaderProcessor {
     public CounterCode[] readCounterSizes(BitReader bitReader) throws IOException {
         counterCodes = new CounterCode[256];
         for (int i = 0; i < 256; i++) {
@@ -24,5 +24,16 @@ public class HuffmanStaticFileHeaderReader extends HuffmanStaticFileHeader {
             }
         }
         return histogram;
+    }
+
+    public int getTotalByteCount() {
+        if (histogram == null) {
+            throw new RuntimeException("Histogram is null. Cannot compute total byte count.");
+        }
+        int sum = 0;
+        for (int i = 0; i < 256; i++) {
+            sum += histogram[i];
+        }
+        return sum;
     }
 }

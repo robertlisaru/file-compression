@@ -5,7 +5,7 @@ import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class HuffmanStaticFileHeaderBuilder extends HuffmanStaticFileHeader {
+public class HuffmanStaticFileHeaderBuilder extends HuffmanStaticFileHeaderProcessor {
     public HuffmanStaticFileHeaderBuilder(int[] histogram) {
         this.histogram = histogram;
     }
