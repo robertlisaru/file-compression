@@ -51,7 +51,7 @@ public class HuffmanEncoderDecoderTest {
         assertEquals(0b00110100, 0xFF & outputBytes[2]);
     }
 
-
+    @Test
     void encodeDecode() throws IOException {
         byte[] inputBytes = new byte[]{'A', 'B', 'C', 'D', 'E', 'C', 'D', 'E', 'C', 'D'};
         InputStream encoderInputStream = new ByteArrayInputStream(inputBytes);
