@@ -3,17 +3,12 @@ package ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic;
 import java.security.InvalidParameterException;
 
 public class Symbol {
-    int code;
-    int sizeInBits;
+    private int code;
+    private int sizeInBits;
 
     public Symbol() {
         code = 0;
         sizeInBits = 0;
-    }
-
-    public Symbol(int code, int sizeInBits) {
-        this.code = code;
-        this.sizeInBits = sizeInBits;
     }
 
     public static Symbol[] newSymbolArray(int n) {

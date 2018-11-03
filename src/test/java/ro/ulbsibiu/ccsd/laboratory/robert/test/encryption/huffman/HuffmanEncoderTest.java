@@ -16,7 +16,7 @@ public class HuffmanEncoderTest {
     void computeDictionary() throws IOException, NoSuchFieldException, IllegalAccessException {
         byte[] bytes = new byte[]{'A', 'B', 'C', 'D', 'E', 'C', 'D', 'E', 'C', 'D'};
         InputStream inputStream = new ByteArrayInputStream(bytes);
-        HuffmanStaticEncoder huffmanEncoder = new HuffmanStaticEncoder();
+        HuffmanStaticEncoder huffmanEncoder = new HuffmanStaticEncoder(null);
 
         huffmanEncoder.computeHeader(inputStream);
         huffmanEncoder.computeDictionary();

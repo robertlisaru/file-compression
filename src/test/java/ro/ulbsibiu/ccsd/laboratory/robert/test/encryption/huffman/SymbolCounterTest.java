@@ -26,7 +26,7 @@ public class SymbolCounterTest {
         assertTrue(symbolCounter6.getSymbols().contains(Character.getNumericValue('C')));
         assertTrue(symbolCounter6.getSymbols().contains(Character.getNumericValue('D')));
 
-        SymbolCounter symbolCounter7 =SymbolCounter.merge(symbolCounter5, symbolCounter6);
+        SymbolCounter symbolCounter7 = SymbolCounter.merge(symbolCounter5, symbolCounter6);
         assertEquals(26, symbolCounter7.getCount());
         assertEquals(4, symbolCounter7.getSymbols().size());
         assertTrue(symbolCounter7.getSymbols().contains(Character.getNumericValue('A')));
