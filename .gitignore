@@ -110,3 +110,8 @@ hs_err_pid*
 .idea/
 CCSDLaboratory.iml
 target/
+input
+encoded
+decoded
+shannon
+huffman

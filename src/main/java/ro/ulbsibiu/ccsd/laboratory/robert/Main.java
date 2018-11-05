@@ -1,36 +1,41 @@
 package ro.ulbsibiu.ccsd.laboratory.robert;
 
-import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
-import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 public class Main {
     public static void main(String[] args) {
-        long time0 = System.currentTimeMillis();
-        File inputFile = new File("file.jpg");
-        File outputFile = new File("output.jpg");
+        //region Huffman Encode Decode snippet
+        /*long time0 = System.currentTimeMillis();
+        File encoderInputFile = new File("input");
+        File encoderOutputFile = new File("encoded");
+        File decoderOutputFile = new File("decoded");
         try {
-            outputFile.createNewFile();
-            final InputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
-            final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-            final BitReader bitReader = new BitReader(inputStream);
-            final BitWriter bitWriter = new BitWriter(outputStream);
-            long fileLengthInBits = inputFile.length() * 8;
-            for (int i = 0; i < fileLengthInBits; i++) {
-                bitWriter.writeBit(bitReader.readBit());
-            }
-            bitWriter.flush();
+            encoderOutputFile.createNewFile();
+            InputStream encoderInputStream = new BufferedInputStream(new FileInputStream(encoderInputFile));
+            final OutputStream encoderOutputStream =
+                    new BufferedOutputStream(new FileOutputStream(encoderOutputFile));
+            HuffmanStaticEncoder encoder = new HuffmanStaticEncoder(new BitWriter(encoderOutputStream));
+            encoder.computeHeader(encoderInputStream);
+            encoder.computeDictionary();
+            encoder.writeHeader();
+            encoderInputStream = new BufferedInputStream(new FileInputStream(encoderInputFile));
+            encoder.encodeAndWrite(encoderInputStream);
+            encoder.flush();
+            encoderOutputStream.close();
+
+            decoderOutputFile.createNewFile();
+            InputStream decoderInputStream = new BufferedInputStream(new FileInputStream(encoderOutputFile));
+            OutputStream decoderOutputStream = new BufferedOutputStream(new FileOutputStream(decoderOutputFile));
+            HuffmanStaticDecoder decoder = new HuffmanStaticDecoder(new BitReader(decoderInputStream));
+            decoder.readHeader();
+            decoder.computeDictionary();
+            decoder.decodeAndWrite(decoderOutputStream);
+            decoderOutputStream.flush();
+            decoderOutputStream.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(System.currentTimeMillis() - time0);
+        System.out.println(System.currentTimeMillis() - time0);*/
+        //endregion
+        
     }
 }
