@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         //region Window properties
-        setTitle("RDVD: Redundanta, Decriptarea si Vulnerabilitatea Datelor");
+        setTitle("CCSD Laboratory");
         setMinimumSize(new Dimension(600, 400));
         setLocationRelativeTo(null); //screen center
         try {
@@ -215,23 +215,21 @@ public class MainFrame extends JFrame {
             GridBagConstraints c = new GridBagConstraints();
             setBorder(new MatteBorder(0, 0, 1, 0, Color.black));
             c.insets = new Insets(2, 2, 2, 2);
-            c.anchor = GridBagConstraints.WEST;
+            c.anchor = GridBagConstraints.LINE_START;
             c.fill = GridBagConstraints.HORIZONTAL;
-            c.weightx = 0.2;
-            c.weighty = 1;
             c.gridx = 0;
             c.gridy = 0;
             add(openFileButton, c);
-            c.weightx = 0.2;
-            c.anchor = GridBagConstraints.EAST;
-            c.gridx = 3;
+            c.anchor = GridBagConstraints.LINE_END;
+            c.gridx = 4;
             add(decodeButton, c);
-            c.weightx = 0.2;
-            c.gridx = 2;
+            c.gridx = 3;
             add(encodeButton, c);
-            c.weightx = 0.2;
-            c.gridx = 1;
+            c.gridx = 2;
             add(comboBox, c);
+            c.anchor = GridBagConstraints.LINE_END;
+            c.gridx = 1;
+            add(new JLabel("Algorithm: "), c);
         }
     }
 
