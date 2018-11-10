@@ -29,6 +29,7 @@ public class MainFrame extends JFrame {
     private StatusBar statusBar = new StatusBar(new GridBagLayout());
     private Toolbar toolbar = new Toolbar(new GridBagLayout());
     private File inputFile;
+    private HuffmanPanel mainPanel = new HuffmanPanel(new BorderLayout());
     private BitWriter bitWriter;
     private BitReader bitReader;
     private HuffmanStaticEncoder encoder;
@@ -111,6 +112,7 @@ public class MainFrame extends JFrame {
         JButton openFileButton = new JButton("Open File");
         JButton encodeButton = new JButton("Encode");
         JButton decodeButton = new JButton("Decode");
+        JComboBox comboBox = new JComboBox(new String[]{"Huffman", "LZ77", "LZW"});
         JFileChooser fileChooser;
 
         public Toolbar(LayoutManager layout) {
@@ -208,20 +210,28 @@ public class MainFrame extends JFrame {
                 }
             });
 
+            comboBox.setEnabled(false);
+
             GridBagConstraints c = new GridBagConstraints();
             setBorder(new MatteBorder(0, 0, 1, 0, Color.black));
             c.insets = new Insets(2, 2, 2, 2);
             c.anchor = GridBagConstraints.WEST;
+            c.fill = GridBagConstraints.HORIZONTAL;
             c.weightx = 0.2;
             c.weighty = 1;
             c.gridx = 0;
             c.gridy = 0;
             add(openFileButton, c);
+            c.weightx = 0.2;
             c.anchor = GridBagConstraints.EAST;
-            c.gridx = 2;
+            c.gridx = 3;
             add(decodeButton, c);
-            c.gridx = 1;
+            c.weightx = 0.2;
+            c.gridx = 2;
             add(encodeButton, c);
+            c.weightx = 0.2;
+            c.gridx = 1;
+            add(comboBox, c);
         }
     }
 
@@ -230,6 +240,10 @@ public class MainFrame extends JFrame {
 
         public HuffmanPanel(LayoutManager layout) {
             super(layout);
+        }
+
+        public void showHistogram() {
+
         }
     }
 }

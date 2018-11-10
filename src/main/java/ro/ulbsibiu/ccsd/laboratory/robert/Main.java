@@ -36,6 +36,6 @@ public class Main {
         }
         System.out.println(System.currentTimeMillis() - time0);*/
         //endregion
-        
+
     }
 }
