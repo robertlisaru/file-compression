@@ -3,9 +3,9 @@ package ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77;
 public class Token {
     private int length;
     private int offset;
-    private byte newSymbol;
+    private int newSymbol;
 
-    public Token(int length, int offset, byte newSymbol) {
+    public Token(int length, int offset, int newSymbol) {
         this.length = length;
         this.offset = offset;
         this.newSymbol = newSymbol;
@@ -31,11 +31,11 @@ public class Token {
         this.offset = offset;
     }
 
-    public byte getNewSymbol() {
+    public int getNewSymbol() {
         return newSymbol;
     }
 
-    public void setNewSymbol(byte newSymbol) {
+    public void setNewSymbol(int newSymbol) {
         this.newSymbol = newSymbol;
     }
 }
