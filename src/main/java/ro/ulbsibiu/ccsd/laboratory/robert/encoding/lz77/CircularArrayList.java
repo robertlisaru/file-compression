@@ -59,7 +59,7 @@ public class CircularArrayList<E>
     @Override
     public E get(int i) {
         if (i < 0 || i >= size()) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("index:" + i + " capacity:" + capacity() + " size:" + size());
         }
         return buf.get(wrapIndex(head + i));
     }
@@ -67,7 +67,7 @@ public class CircularArrayList<E>
     @Override
     public E set(int i, E e) {
         if (i < 0 || i >= size()) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("index:" + i + " capacity:" + capacity() + " size:" + size());
         }
         return buf.set(wrapIndex(head + i), e);
     }
@@ -82,7 +82,7 @@ public class CircularArrayList<E>
                             + " before adding more to back.)");
         }
         if (i < 0 || i > s) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("index:" + i + " capacity:" + capacity() + " size:" + size());
         }
         tail = wrapIndex(tail + 1);
         if (i < s) {
@@ -95,7 +95,7 @@ public class CircularArrayList<E>
     public E remove(int i) {
         int s = size();
         if (i < 0 || i >= s) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("index:" + i + " capacity:" + capacity() + " size:" + size());
         }
         E e = get(i);
         if (i > 0) {

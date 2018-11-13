@@ -73,7 +73,7 @@ public class SlidingWindow {
     }
 
     public void slide(long slideLength) throws IOException {
-        if (lookAheadSize == 1 && streamEnded()) {
+        if (lookAheadSize == 0 && streamEnded()) {
             throw new RuntimeException("Stream ended & look ahead is empty");
         }
         if (slideLength < 1) {
