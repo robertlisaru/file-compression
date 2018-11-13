@@ -13,7 +13,11 @@ public class BitReader {
 
     public int readBit() throws IOException {
         if (buffer.isEmpty()) {
-            buffer.refill((byte) inputStream.read());
+            int readByte = inputStream.read();
+            if (readByte == -1) {
+                throw new UnsupportedOperationException("Cannot read bit, stream ended");
+            }
+            buffer.refill((byte) readByte);
         }
         return buffer.nextBit();
     }

@@ -1,41 +1,53 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77;
 
 public class Token {
-    private int length;
-    private int offset;
-    private int newSymbol;
+    private long length;
+    private long offset;
+    private long symbol;
 
-    public Token(int length, int offset, int newSymbol) {
+    public Token(long length, long offset, long symbol) {
         this.length = length;
         this.offset = offset;
-        this.newSymbol = newSymbol;
+        this.symbol = symbol;
     }
 
     public Token() {
     }
 
-    public int getLength() {
+    public long getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(long length) {
 
         this.length = length;
     }
 
-    public int getOffset() {
+    public long getOffset() {
         return offset;
     }
 
-    public void setOffset(int offset) {
+    public void setOffset(long offset) {
         this.offset = offset;
     }
 
-    public int getNewSymbol() {
-        return newSymbol;
+    public long getSymbol() {
+        return symbol;
     }
 
-    public void setNewSymbol(int newSymbol) {
-        this.newSymbol = newSymbol;
+    public void setSymbol(long newSymbol) {
+        this.symbol = newSymbol;
+    }
+
+    @Override
+
+    public boolean equals(Object obj) {
+        Token otherToken = (Token) obj;
+        if (otherToken.getLength() != length
+                || otherToken.getOffset() != offset
+                || otherToken.getSymbol() != symbol) {
+            return false;
+        }
+        return true;
     }
 }
