@@ -7,6 +7,7 @@ import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticDe
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticEncoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Decoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Encoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.Token;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Vector;
 
 public class MainFrame extends JFrame {
     private MyMenuBar menuBar = new MyMenuBar();
@@ -325,6 +327,7 @@ public class MainFrame extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         statusBar.leftStatus.setText("Encoding. Please wait...");
+                        eastPanel.tokensTableModel.getDataVector().removeAllElements();
                         EventQueue.invokeLater(
                                 new Thread(() -> {
                                     File outputFile = new File(inputFile.getAbsolutePath() + ".o" +
@@ -340,7 +343,20 @@ public class MainFrame extends JFrame {
                                         inputStream = new BufferedInputStream(new FileInputStream(inputFile));
                                         long time0 = System.currentTimeMillis();
                                         if (westPanel.showTokens.isSelected()) {
-
+                                            encoder.prepareStepByStepEncoding(
+                                                    westPanel.offsetComboBox.getSelectedIndex() + 3
+                                                    , westPanel.lengthComboBox.getSelectedIndex() + 2
+                                                    , inputStream, outputStream);
+                                            while (encoder.slidingWindowHasMoreBytes()) {
+                                                Token token = encoder.nextToken();
+                                                Vector row = new Vector();
+                                                row.add(token.getOffset());
+                                                row.add(token.getLength());
+                                                row.add(token.getSymbol());
+                                                row.add((char) token.getSymbol());
+                                                eastPanel.tokensTableModel.addRow(row);
+                                            }
+                                            encoder.flush();
                                         } else {
                                             encoder.encode(westPanel.offsetComboBox.getSelectedIndex() + 3
                                                     , westPanel.lengthComboBox.getSelectedIndex() + 2

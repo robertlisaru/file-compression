@@ -20,8 +20,9 @@ public class LZ77EncoderDecoderTest {
                         ";asodjfposadifhapoguhwagnpaoiuhszjfng pougha peut pusdhg.hgzous;e" +
                         "pasouhgpaoiughpsaugwjregheprgusduggjpaoihjg;lkjhseltsluytszhgpaiuhr")
                         .getBytes(StandardCharsets.US_ASCII);
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(originalBytes);
 
+                //<editor-fold desc="encode">
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(originalBytes);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 LZ77Encoder encoder = new LZ77Encoder();
                 encoder.encode(nrBitsForOffset, nrBitsForLength, inputStream, outputStream);
@@ -29,7 +30,9 @@ public class LZ77EncoderDecoderTest {
                 byte[] encodedBytes = outputStream.toByteArray();
                 outputStream.close();
                 inputStream.close();
+                //</editor-fold>
 
+                //<editor-fold desc="decode">
                 inputStream = new ByteArrayInputStream(encodedBytes);
                 outputStream = new ByteArrayOutputStream();
                 LZ77Decoder decoder = new LZ77Decoder();
@@ -38,6 +41,7 @@ public class LZ77EncoderDecoderTest {
                 byte[] decodedBytes = outputStream.toByteArray();
                 outputStream.close();
                 inputStream.close();
+                //</editor-fold>
 
                 assertEquals(originalBytes.length, decodedBytes.length);
                 for (int i = 0; i < originalBytes.length; i++) {
