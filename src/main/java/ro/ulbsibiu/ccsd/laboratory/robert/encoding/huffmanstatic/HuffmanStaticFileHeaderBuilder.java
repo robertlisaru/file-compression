@@ -23,18 +23,18 @@ public class HuffmanStaticFileHeaderBuilder extends HuffmanStaticFileHeaderProce
         return histogram;
     }
 
-    public CounterCode[] computeCounterCodes() {
+    public CounterLength[] computeCounterLengths() {
         if (histogram == null) {
             throw new RuntimeException("Histogram not initialized");
         }
-        counterCodes = new CounterCode[256];
+        counterCodes = new CounterLength[256];
         for (int i = 0; i < histogram.length; i++) {
             counterCodes[i] =
                     histogram[i] > 0 ?
-                            histogram[i] < 256 ? CounterCode.SE_REPREZINTA_PE_1_OCTET
-                                    : histogram[i] < 65536 ? CounterCode.SE_REPREZINTA_PE_2_OCTETI
-                                    : CounterCode.SE_REPREZINTA_PE_4_OCTETI
-                            : CounterCode.NU_SE_REPREZINTA;
+                            histogram[i] < 256 ? CounterLength.SE_REPREZINTA_PE_1_OCTET
+                                    : histogram[i] < 65536 ? CounterLength.SE_REPREZINTA_PE_2_OCTETI
+                                    : CounterLength.SE_REPREZINTA_PE_4_OCTETI
+                            : CounterLength.NU_SE_REPREZINTA;
         }
         return counterCodes;
     }
@@ -47,7 +47,7 @@ public class HuffmanStaticFileHeaderBuilder extends HuffmanStaticFileHeaderProce
             bitWriter.writeNBitValue(counterCodes[i].ordinal(), 2);
         }
         for (int i = 0; i < 256; i++) {
-            if (counterCodes[i] != CounterCode.NU_SE_REPREZINTA) {
+            if (counterCodes[i] != CounterLength.NU_SE_REPREZINTA) {
                 bitWriter.writeNBitValue(histogram[i], counterCodes[i].getNrBytes() * 8);
             }
         }

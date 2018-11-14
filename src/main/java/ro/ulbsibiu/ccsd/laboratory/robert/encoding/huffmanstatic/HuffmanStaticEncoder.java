@@ -15,7 +15,7 @@ public class HuffmanStaticEncoder extends HuffmanStatic {
 
     public void computeHeader(InputStream inputStream) throws IOException {
         ((HuffmanStaticFileHeaderBuilder) fileHeaderProcessor).computeHistogram(inputStream);
-        ((HuffmanStaticFileHeaderBuilder) fileHeaderProcessor).computeCounterCodes();
+        ((HuffmanStaticFileHeaderBuilder) fileHeaderProcessor).computeCounterLengths();
     }
 
     public void writeHeader() throws IOException {

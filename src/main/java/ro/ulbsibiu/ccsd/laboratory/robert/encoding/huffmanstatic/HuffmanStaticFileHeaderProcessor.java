@@ -6,7 +6,7 @@ import java.util.List;
 
 public class HuffmanStaticFileHeaderProcessor {
     protected int[] histogram;
-    protected CounterCode[] counterCodes;
+    protected CounterLength[] counterCodes;
 
     protected HuffmanStaticFileHeaderProcessor() {
     }
@@ -26,7 +26,8 @@ public class HuffmanStaticFileHeaderProcessor {
         return trimmedHistogram;
     }
 
-    public enum CounterCode {
+    public enum CounterLength
+    {
         NU_SE_REPREZINTA(0),
         SE_REPREZINTA_PE_1_OCTET(1),
         SE_REPREZINTA_PE_2_OCTETI(2),
@@ -34,7 +35,7 @@ public class HuffmanStaticFileHeaderProcessor {
 
         private int nrBytes;
 
-        CounterCode(int nrBytes) {
+        CounterLength(int nrBytes) {
             this.nrBytes = nrBytes;
         }
 

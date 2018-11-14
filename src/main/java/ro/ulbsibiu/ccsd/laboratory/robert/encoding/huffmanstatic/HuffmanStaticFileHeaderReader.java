@@ -5,10 +5,10 @@ import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 import java.io.IOException;
 
 public class HuffmanStaticFileHeaderReader extends HuffmanStaticFileHeaderProcessor {
-    public CounterCode[] readCounterSizes(BitReader bitReader) throws IOException {
-        counterCodes = new CounterCode[256];
+    public CounterLength[] readCounterSizes(BitReader bitReader) throws IOException {
+        counterCodes = new CounterLength[256];
         for (int i = 0; i < 256; i++) {
-            counterCodes[i] = CounterCode.values()[(int) bitReader.readNBitValue(2)];
+            counterCodes[i] = CounterLength.values()[(int) bitReader.readNBitValue(2)];
         }
         return counterCodes;
     }
@@ -19,7 +19,7 @@ public class HuffmanStaticFileHeaderReader extends HuffmanStaticFileHeaderProces
         }
         histogram = new int[256];
         for (int i = 0; i < 256; i++) {
-            if (counterCodes[i] != CounterCode.NU_SE_REPREZINTA) {
+            if (counterCodes[i] != CounterLength.NU_SE_REPREZINTA) {
                 histogram[i] = (int) bitReader.readNBitValue(counterCodes[i].getNrBytes() * 8);
             }
         }

@@ -9,7 +9,6 @@ import java.io.OutputStream;
 public class LZ77Encoder {
     private int nrBitsForOffset;
     private int nrBitsForLength;
-    private OutputStream outputStream;
     private BitWriter bitWriter;
     private SlidingWindow slidingWindow;
 
@@ -34,7 +33,6 @@ public class LZ77Encoder {
     public void prepareStepByStepEncoding(int nrBitsForOffset, int nrBitsForLength, InputStream inputStream, OutputStream outputStream) throws IOException {
         this.nrBitsForOffset = nrBitsForOffset;
         this.nrBitsForLength = nrBitsForLength;
-        this.outputStream = outputStream;
         slidingWindow = new SlidingWindow(nrBitsForOffset, nrBitsForLength, inputStream);
         bitWriter = new BitWriter(outputStream);
         bitWriter.writeNBitValue(nrBitsForLength, 3);
