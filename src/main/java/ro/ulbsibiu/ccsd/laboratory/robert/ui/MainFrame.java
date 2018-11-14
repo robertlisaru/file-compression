@@ -1,17 +1,19 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.ui;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jfree.data.statistics.HistogramDataset;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticDecoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticEncoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Decoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Encoder;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,14 +28,15 @@ import java.io.OutputStream;
 
 public class MainFrame extends JFrame {
     private MyMenuBar menuBar = new MyMenuBar();
-    private StatusBar statusBar = new StatusBar(new GridBagLayout());
-    private Toolbar toolbar = new Toolbar(new GridBagLayout());
+    private StatusBar statusBar = new StatusBar();
+    private Toolbar toolbar = new Toolbar();
     private File inputFile;
-    private HuffmanPanel mainPanel = new HuffmanPanel(new BorderLayout());
     private BitWriter bitWriter;
     private BitReader bitReader;
-    private HuffmanStaticEncoder encoder;
-    private HuffmanStaticDecoder decoder;
+    private CardLayout cardLayout = new CardLayout();
+    private JPanel mainPanel = new JPanel(cardLayout);
+    private HuffmanPanel huffmanPanel = new HuffmanPanel();
+    private LZ77Panel lz77Panel = new LZ77Panel();
 
     public MainFrame() {
         //region Window properties
@@ -48,8 +51,12 @@ public class MainFrame extends JFrame {
         setJMenuBar(menuBar);
         //endregion
 
+        mainPanel.add(huffmanPanel, "1");
+        mainPanel.add(lz77Panel, "2");
+        cardLayout.show(mainPanel, "1");
         setLayout(new BorderLayout());
         add(statusBar, BorderLayout.SOUTH);
+        add(mainPanel, BorderLayout.CENTER);
         add(toolbar, BorderLayout.NORTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -90,8 +97,8 @@ public class MainFrame extends JFrame {
         private JLabel leftStatus = new JLabel("Ready");
         private JLabel rightStatus = new JLabel("No open file");
 
-        public StatusBar(LayoutManager layout) {
-            super(layout);
+        public StatusBar() {
+            setLayout(new GridBagLayout());
             setBorder(new EtchedBorder(EtchedBorder.RAISED));
             GridBagConstraints c = new GridBagConstraints();
             c.insets = new Insets(2, 2, 2, 2);
@@ -110,13 +117,11 @@ public class MainFrame extends JFrame {
 
     private class Toolbar extends JPanel {
         JButton openFileButton = new JButton("Open File");
-        JButton encodeButton = new JButton("Encode");
-        JButton decodeButton = new JButton("Decode");
         JComboBox comboBox = new JComboBox(new String[]{"Huffman", "LZ77", "LZW"});
         JFileChooser fileChooser;
 
-        public Toolbar(LayoutManager layout) {
-            super(layout);
+        public Toolbar() {
+            setLayout(new FlowLayout(FlowLayout.LEFT));
             setBackground(Color.lightGray);
 
             openFileButton.addActionListener(new ActionListener() {
@@ -127,121 +132,328 @@ public class MainFrame extends JFrame {
                             == JFileChooser.APPROVE_OPTION) {
                         inputFile = fileChooser.getSelectedFile();
                         statusBar.rightStatus.setText("File: " + inputFile.getName());
-                        encodeButton.setEnabled(true);
+                        huffmanPanel.southPanel.huffmanEncodeButton.setEnabled(true);
+                        lz77Panel.southPanel.lz77encodeButton.setEnabled(true);
                         if (FilenameUtils.getExtension(inputFile.getName()).equals("hs")) {
-                            decodeButton.setEnabled(true);
+                            huffmanPanel.southPanel.huffmanDecodeButton.setEnabled(true);
+                        }
+                        if (FilenameUtils.getExtension(inputFile.getName()).equals("lz77")) {
+                            lz77Panel.southPanel.lz77decodeButton.setEnabled(true);
                         }
                     }
                 }
             });
 
-            encodeButton.setEnabled(false);
-            encodeButton.addActionListener(new ActionListener() {
+            comboBox.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    File outputFile = new File(FilenameUtils
-                            .removeExtension(inputFile.getAbsolutePath()) + ".hs");
-                    OutputStream outputStream = null;
-                    InputStream inputStream = null;
-                    try {
-                        outputFile.createNewFile();
-                        outputStream = new FileOutputStream(outputFile);
-                        inputStream = new BufferedInputStream(new FileInputStream(inputFile));
-                        bitWriter = new BitWriter(new BufferedOutputStream(outputStream));
-                        encoder = new HuffmanStaticEncoder(bitWriter);
-                        long time0 = System.currentTimeMillis();
-                        encoder.computeHeader(inputStream);
-                        encoder.computeDictionary();
-                        encoder.writeHeader();
-                        inputStream = new BufferedInputStream(new FileInputStream(inputFile));
-                        encoder.encodeAndWrite(inputStream);
-                        encoder.flush();
-                        long timePassed = System.currentTimeMillis() - time0;
-                        statusBar.leftStatus.setText("Encoded in " + (timePassed / 1000.0) + " seconds.");
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    } finally {
-                        try {
-                            outputStream.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        try {
-                            inputStream.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                }
-            });
-            decodeButton.setEnabled(false);
-            decodeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    File outputFile = new File(FilenameUtils.removeExtension(inputFile.getAbsolutePath()) + ".hsd");
-                    OutputStream outputStream = null;
-                    InputStream inputStream = null;
-                    try {
-                        outputFile.createNewFile();
-                        outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-                        inputStream = new BufferedInputStream(new FileInputStream(inputFile));
-                        bitReader = new BitReader(inputStream);
-                        decoder = new HuffmanStaticDecoder(bitReader);
-                        long time0 = System.currentTimeMillis();
-                        decoder.readHeader();
-                        decoder.computeDictionary();
-                        decoder.decodeAndWrite(outputStream);
-                        long timePassed = System.currentTimeMillis() - time0;
-                        statusBar.leftStatus.setText("Decoded in " + (timePassed / 1000.0) + " seconds.");
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    } finally {
-                        try {
-                            outputStream.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        try {
-                            inputStream.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
+                    switch (comboBox.getSelectedIndex()) {
+                        case 0:
+                            cardLayout.show(mainPanel, "1");
+                            break;
+                        case 1:
+                            cardLayout.show(mainPanel, "2");
+                            break;
                     }
                 }
             });
 
-            comboBox.setEnabled(false);
-
-            GridBagConstraints c = new GridBagConstraints();
             setBorder(new MatteBorder(0, 0, 1, 0, Color.black));
-            c.insets = new Insets(2, 2, 2, 2);
-            c.anchor = GridBagConstraints.LINE_START;
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 0;
-            c.gridy = 0;
-            add(openFileButton, c);
-            c.anchor = GridBagConstraints.LINE_END;
-            c.gridx = 4;
-            add(decodeButton, c);
-            c.gridx = 3;
-            add(encodeButton, c);
-            c.gridx = 2;
-            add(comboBox, c);
-            c.anchor = GridBagConstraints.LINE_END;
-            c.gridx = 1;
-            add(new JLabel("Algorithm: "), c);
+
+            add(openFileButton);
+            add(new JLabel("Algorithm: "));
+            add(comboBox);
         }
     }
 
     private class HuffmanPanel extends JPanel {
-        HistogramDataset histogramDataset = new HistogramDataset();
+        private HuffmanStaticEncoder encoder;
+        private HuffmanStaticDecoder decoder;
+        private SouthPanel southPanel = new SouthPanel();
 
-        public HuffmanPanel(LayoutManager layout) {
-            super(layout);
+        public HuffmanPanel() {
+            setLayout(new BorderLayout());
+            add(southPanel, BorderLayout.SOUTH);
         }
 
-        public void showHistogram() {
+        private class SouthPanel extends JPanel {
+            private JButton huffmanEncodeButton = new JButton("Encode");
+            private JButton huffmanDecodeButton = new JButton("Decode");
 
+            public SouthPanel() {
+                huffmanEncodeButton.setEnabled(false);
+                huffmanEncodeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        statusBar.leftStatus.setText("Encoding. Please wait...");
+                        EventQueue.invokeLater(new Thread(() -> {
+                            File outputFile = new File(FilenameUtils
+                                    .removeExtension(inputFile.getAbsolutePath()) + ".hs");
+                            OutputStream outputStream = null;
+                            InputStream inputStream = null;
+                            try {
+                                outputFile.createNewFile();
+                                outputStream = new FileOutputStream(outputFile);
+                                inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                bitWriter = new BitWriter(new BufferedOutputStream(outputStream));
+                                encoder = new HuffmanStaticEncoder(bitWriter);
+                                long time0 = System.currentTimeMillis();
+                                encoder.computeHeader(inputStream);
+                                encoder.computeDictionary();
+                                encoder.writeHeader();
+                                inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                encoder.encodeAndWrite(inputStream);
+                                encoder.flush();
+                                long timePassed = System.currentTimeMillis() - time0;
+                                statusBar.leftStatus.setText("Encoded in " + (timePassed / 1000.0) + " seconds.");
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            } finally {
+                                try {
+                                    outputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                try {
+                                    inputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }));
+                    }
+                });
+                huffmanDecodeButton.setEnabled(false);
+                huffmanDecodeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        statusBar.leftStatus.setText("Decoding. Please wait...");
+                        EventQueue.invokeLater(new Thread(() -> {
+                            File outputFile = new File(FilenameUtils.removeExtension(inputFile.getAbsolutePath()) + ".hsd");
+                            OutputStream outputStream = null;
+                            InputStream inputStream = null;
+                            try {
+                                outputFile.createNewFile();
+                                outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                                inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                bitReader = new BitReader(inputStream);
+                                decoder = new HuffmanStaticDecoder(bitReader);
+                                long time0 = System.currentTimeMillis();
+                                decoder.readHeader();
+                                decoder.computeDictionary();
+                                decoder.decodeAndWrite(outputStream);
+                                long timePassed = System.currentTimeMillis() - time0;
+                                statusBar.leftStatus.setText("Decoded in " + (timePassed / 1000.0) + " seconds.");
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            } finally {
+                                try {
+                                    outputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                try {
+                                    inputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }));
+                    }
+                });
+
+                setLayout(new FlowLayout());
+                add(huffmanEncodeButton);
+                add(huffmanDecodeButton);
+            }
+        }
+    }
+
+    private class LZ77Panel extends JPanel {
+        private SouthPanel southPanel = new SouthPanel();
+        private WestPanel westPanel = new WestPanel();
+        private EastPanel eastPanel = new EastPanel();
+        private LZ77Encoder encoder;
+        private LZ77Decoder decoder;
+
+        public LZ77Panel() {
+            setLayout(new BorderLayout());
+            add(southPanel, BorderLayout.SOUTH);
+            add(westPanel, BorderLayout.WEST);
+            add(eastPanel, BorderLayout.EAST);
+        }
+
+        private class EastPanel extends JPanel {
+            private JScrollPane tokensScrollPane;
+            private JTable tokensTable;
+            private DefaultTableModel tokensTableModel;
+            private String[] columnNames = new String[]{"Offset", "Length", "Byte", "ASCII"};
+
+            public EastPanel() {
+                setLayout(new BorderLayout());
+                tokensTableModel = new DefaultTableModel() {
+                    @Override
+                    public int getColumnCount() {
+                        return 4;
+                    }
+
+                    @Override
+                    public String getColumnName(int index) {
+                        return columnNames[index];
+                    }
+
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                };
+
+                tokensTable = new JTable(tokensTableModel);
+                tokensTable.setFocusable(false);
+                tokensScrollPane = new JScrollPane(tokensTable);
+                tokensScrollPane.setPreferredSize(new Dimension(200, 285));
+                add(tokensScrollPane, BorderLayout.CENTER);
+            }
+        }
+
+        private class SouthPanel extends JPanel {
+            private JButton lz77encodeButton = new JButton("Encode");
+            private JButton lz77decodeButton = new JButton("Decode");
+
+            public SouthPanel() {
+                lz77encodeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        statusBar.leftStatus.setText("Encoding. Please wait...");
+                        EventQueue.invokeLater(
+                                new Thread(() -> {
+                                    File outputFile = new File(inputFile.getAbsolutePath() + ".o" +
+                                            (westPanel.offsetComboBox.getSelectedIndex() + 3) +
+                                            "l" + (westPanel.lengthComboBox.getSelectedIndex() + 2) + ".lz77");
+                                    OutputStream outputStream = null;
+                                    InputStream inputStream = null;
+                                    try {
+                                        outputFile.createNewFile();
+                                        outputStream = new FileOutputStream(outputFile);
+                                        inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                        encoder = new LZ77Encoder();
+                                        inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                        long time0 = System.currentTimeMillis();
+                                        if (westPanel.showTokens.isSelected()) {
+
+                                        } else {
+                                            encoder.encode(westPanel.offsetComboBox.getSelectedIndex() + 3
+                                                    , westPanel.lengthComboBox.getSelectedIndex() + 2
+                                                    , inputStream, outputStream);
+                                        }
+                                        outputStream.flush();
+                                        long timePassed = System.currentTimeMillis() - time0;
+                                        statusBar.leftStatus.setText("Encoded in " + (timePassed / 1000.0) + " seconds.");
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    } finally {
+                                        try {
+                                            outputStream.close();
+                                        } catch (IOException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                        try {
+                                            inputStream.close();
+                                        } catch (IOException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                    }
+                                }));
+                    }
+                });
+                lz77decodeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        statusBar.leftStatus.setText("Decoding. Please wait...");
+                        EventQueue.invokeLater(new Thread(() -> {
+                            File outputFile = new File(FilenameUtils.removeExtension(inputFile.getAbsolutePath())
+                                    + ".lz77d");
+                            OutputStream outputStream = null;
+                            InputStream inputStream = null;
+                            try {
+                                outputFile.createNewFile();
+                                outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                                inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                decoder = new LZ77Decoder();
+                                long time0 = System.currentTimeMillis();
+                                statusBar.leftStatus.setText("Decoding. Please wait...");
+                                decoder.decode(inputStream, outputStream);
+                                long timePassed = System.currentTimeMillis() - time0;
+                                statusBar.leftStatus.setText("Decoded in " + (timePassed / 1000.0) + " seconds.");
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            } finally {
+                                try {
+                                    outputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                try {
+                                    inputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        }));
+                    }
+                });
+                lz77encodeButton.setEnabled(false);
+                lz77decodeButton.setEnabled(false);
+                setLayout(new FlowLayout());
+                add(lz77encodeButton);
+                add(lz77decodeButton);
+            }
+        }
+
+        private class WestPanel extends JPanel {
+            private JComboBox offsetComboBox =
+                    new JComboBox(new String[]{"3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"});
+            private JComboBox lengthComboBox =
+                    new JComboBox(new String[]{"2", "3", "4", "5", "6", "7"});
+            private JCheckBox showTokens = new JCheckBox("Show generated tokens");
+
+            public WestPanel() {
+                showTokens.setSelected(true);
+                showTokens.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (showTokens.isSelected()) {
+                            eastPanel.setVisible(true);
+                        } else {
+                            eastPanel.setVisible(false);
+                        }
+                    }
+                });
+
+                setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+                add(Box.createVerticalGlue());
+                JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                row1.add(new JLabel("Offset size: "));
+                row1.add(offsetComboBox);
+                row1.add(new JLabel("bits"));
+                row1.setAlignmentX(Component.LEFT_ALIGNMENT);
+                row1.setAlignmentY(Component.TOP_ALIGNMENT);
+                add(row1);
+                add(Box.createVerticalGlue());
+                JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                row2.add(new JLabel("Length size: "));
+                row2.add(lengthComboBox);
+                row2.add(new JLabel("bits"));
+                row2.setAlignmentX(Component.LEFT_ALIGNMENT);
+                row2.setAlignmentY(Component.TOP_ALIGNMENT);
+                add(row2);
+                add(Box.createVerticalGlue());
+                showTokens.setAlignmentX(Component.LEFT_ALIGNMENT);
+                showTokens.setAlignmentY(Component.TOP_ALIGNMENT);
+                add(showTokens);
+                add(new Box.Filler(new Dimension(0, 500), new Dimension(0, 1500),
+                        new Dimension(200, 1500)));
+            }
         }
     }
 }
