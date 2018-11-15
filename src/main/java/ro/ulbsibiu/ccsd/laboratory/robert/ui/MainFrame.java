@@ -39,6 +39,7 @@ public class MainFrame extends JFrame {
     private JPanel mainPanel = new JPanel(cardLayout);
     private HuffmanPanel huffmanPanel = new HuffmanPanel();
     private LZ77Panel lz77Panel = new LZ77Panel();
+    private LZWPanel lzwPanel = new LZWPanel();
 
     public MainFrame() {
         //region Window properties
@@ -55,7 +56,9 @@ public class MainFrame extends JFrame {
 
         mainPanel.add(huffmanPanel, "1");
         mainPanel.add(lz77Panel, "2");
-        cardLayout.show(mainPanel, "1");
+        mainPanel.add(lzwPanel, "3");
+
+        cardLayout.show(mainPanel, "3");
         setLayout(new BorderLayout());
         add(statusBar, BorderLayout.SOUTH);
         add(mainPanel, BorderLayout.CENTER);
@@ -146,6 +149,7 @@ public class MainFrame extends JFrame {
                 }
             });
 
+            comboBox.setSelectedIndex(2);
             comboBox.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -155,6 +159,9 @@ public class MainFrame extends JFrame {
                             break;
                         case 1:
                             cardLayout.show(mainPanel, "2");
+                            break;
+                        case 2:
+                            cardLayout.show(mainPanel, "3");
                             break;
                     }
                 }
@@ -469,6 +476,129 @@ public class MainFrame extends JFrame {
                 add(showTokens);
                 add(new Box.Filler(new Dimension(0, 500), new Dimension(0, 1500),
                         new Dimension(200, 1500)));
+            }
+        }
+    }
+
+    private class LZWPanel extends JPanel {
+        private SouthPanel southPanel = new SouthPanel();
+        private WestPanel westPanel = new WestPanel();
+        private EastPanel eastPanel = new EastPanel();
+
+        public LZWPanel() {
+            setLayout(new BorderLayout());
+            add(southPanel, BorderLayout.SOUTH);
+            add(westPanel, BorderLayout.WEST);
+            add(eastPanel, BorderLayout.EAST);
+        }
+
+        private class SouthPanel extends JPanel {
+            private JButton encodeButton = new JButton("Encode");
+            private JButton decodeButton = new JButton("Decode");
+
+            public SouthPanel() {
+                encodeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        statusBar.leftStatus.setText("Encoding. Please wait...");
+                        EventQueue.invokeLater(
+                                new Thread(() -> {
+
+                                }));
+                    }
+                });
+                decodeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        statusBar.leftStatus.setText("Decoding. Please wait...");
+                        EventQueue.invokeLater(new Thread(() -> {
+
+                        }));
+                    }
+                });
+                encodeButton.setEnabled(false);
+                decodeButton.setEnabled(false);
+                setLayout(new FlowLayout());
+                add(encodeButton);
+                add(decodeButton);
+            }
+        }
+
+        private class WestPanel extends JPanel {
+            private JComboBox dictionarySize =
+                    new JComboBox(new String[]{"9", "10", "11", "12", "13", "14", "15"});
+            private JComboBox dictionaryStrategy =
+                    new JComboBox(new String[]{"Empty", "Freeze"});
+            private JCheckBox showGeneratedIndexes = new JCheckBox("Show generated indexes");
+
+            public WestPanel() {
+                showGeneratedIndexes.setSelected(true);
+                showGeneratedIndexes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (showGeneratedIndexes.isSelected()) {
+                            eastPanel.setVisible(true);
+                        } else {
+                            eastPanel.setVisible(false);
+                        }
+                    }
+                });
+
+                setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+                add(Box.createVerticalGlue());
+                JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                row1.add(new JLabel("Dictionary size: "));
+                row1.add(dictionarySize);
+                row1.add(new JLabel("bits"));
+                row1.setAlignmentX(Component.LEFT_ALIGNMENT);
+                row1.setAlignmentY(Component.TOP_ALIGNMENT);
+                add(row1);
+                add(Box.createVerticalGlue());
+                JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                row2.add(new JLabel("Dictionary strategy: "));
+                row2.add(dictionaryStrategy);
+                row2.setAlignmentX(Component.LEFT_ALIGNMENT);
+                row2.setAlignmentY(Component.TOP_ALIGNMENT);
+                add(row2);
+                add(Box.createVerticalGlue());
+                showGeneratedIndexes.setAlignmentX(Component.LEFT_ALIGNMENT);
+                showGeneratedIndexes.setAlignmentY(Component.TOP_ALIGNMENT);
+                add(showGeneratedIndexes);
+                add(new Box.Filler(new Dimension(0, 500), new Dimension(0, 1500),
+                        new Dimension(200, 1500)));
+            }
+        }
+
+        private class EastPanel extends JPanel {
+            private JScrollPane indexesScrollPane;
+            private JTable indexesTable;
+            private DefaultTableModel indexesTableModel;
+            private String[] columnNames = new String[]{"Index"};
+
+            public EastPanel() {
+                setLayout(new BorderLayout());
+                indexesTableModel = new DefaultTableModel() {
+                    @Override
+                    public int getColumnCount() {
+                        return columnNames.length;
+                    }
+
+                    @Override
+                    public String getColumnName(int index) {
+                        return columnNames[index];
+                    }
+
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                };
+
+                indexesTable = new JTable(indexesTableModel);
+                indexesTable.setFocusable(false);
+                indexesScrollPane = new JScrollPane(indexesTable);
+                indexesScrollPane.setPreferredSize(new Dimension(50, 285));
+                add(indexesScrollPane, BorderLayout.CENTER);
             }
         }
     }

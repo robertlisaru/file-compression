@@ -26,8 +26,7 @@ public class HuffmanStaticFileHeaderProcessor {
         return trimmedHistogram;
     }
 
-    public enum CounterLength
-    {
+    public enum CounterLength {
         NU_SE_REPREZINTA(0),
         SE_REPREZINTA_PE_1_OCTET(1),
         SE_REPREZINTA_PE_2_OCTETI(2),
