@@ -1,4 +1,4 @@
-package ro.ulbsibiu.ccsd.laboratory.robert.encoding.lzw;
+package ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lzw.encoder;
 
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
 
@@ -12,14 +12,17 @@ public class LZWEncoder {
     private Dictionary dictionary;
     private int numBitsForIndex;
 
-    public LZWEncoder(int numBitsForIndex, InputStream inputStream, OutputStream outputStream) {
+    public LZWEncoder(int dictinoaryType, int numBitsForIndex, InputStream inputStream, OutputStream outputStream) {
         bitWriter = new BitWriter(outputStream);
         this.inputStream = inputStream;
-        dictionary = new FreezeStrategyDictionary(numBitsForIndex);
+        dictionary = dictinoaryType == 0 ? new FreezeStrategyDictionary(numBitsForIndex)
+                : new EmptyStrategyDictionary(numBitsForIndex);
         this.numBitsForIndex = numBitsForIndex;
     }
 
     public void encode() throws IOException {
+        bitWriter.writeBit((int) dictionary.getHeaderCode());
+        bitWriter.writeNBitValue(numBitsForIndex, 4);
         int index;
         int readByte = inputStream.read();
         do {

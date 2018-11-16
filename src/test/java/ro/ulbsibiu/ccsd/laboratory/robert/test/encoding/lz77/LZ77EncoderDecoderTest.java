@@ -1,8 +1,8 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.test.encoding.lz77;
 
 import org.junit.jupiter.api.Test;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Decoder;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Encoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.LZ77Decoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.LZ77Encoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

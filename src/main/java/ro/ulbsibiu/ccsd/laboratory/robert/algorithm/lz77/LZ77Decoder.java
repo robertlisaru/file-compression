@@ -1,4 +1,4 @@
-package ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77;
+package ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77;
 
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 

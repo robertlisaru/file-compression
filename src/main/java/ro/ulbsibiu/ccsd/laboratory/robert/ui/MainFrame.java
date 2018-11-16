@@ -1,13 +1,14 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.ui;
 
 import org.apache.commons.io.FilenameUtils;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.huffmanstatic.HuffmanStaticDecoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.huffmanstatic.HuffmanStaticEncoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.LZ77Decoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.LZ77Encoder;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.Token;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lzw.encoder.LZWEncoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticDecoder;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic.HuffmanStaticEncoder;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Decoder;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.LZ77Encoder;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.Token;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -347,7 +348,6 @@ public class MainFrame extends JFrame {
                                         outputStream = new FileOutputStream(outputFile);
                                         inputStream = new BufferedInputStream(new FileInputStream(inputFile));
                                         encoder = new LZ77Encoder();
-                                        inputStream = new BufferedInputStream(new FileInputStream(inputFile));
                                         long time0 = System.currentTimeMillis();
                                         if (westPanel.showTokens.isSelected()) {
                                             encoder.prepareStepByStepEncoding(
@@ -484,6 +484,7 @@ public class MainFrame extends JFrame {
         private SouthPanel southPanel = new SouthPanel();
         private WestPanel westPanel = new WestPanel();
         private EastPanel eastPanel = new EastPanel();
+        private LZWEncoder encoder;
 
         public LZWPanel() {
             setLayout(new BorderLayout());
@@ -503,7 +504,41 @@ public class MainFrame extends JFrame {
                         statusBar.leftStatus.setText("Encoding. Please wait...");
                         EventQueue.invokeLater(
                                 new Thread(() -> {
+                                    File outputFile = new File(inputFile.getAbsolutePath() + ".o" +
+                                            (westPanel.dictionaryStrategy.getSelectedItem()) +
+                                            (westPanel.dictionarySize.getSelectedIndex() + 9) + ".lzw");
+                                    OutputStream outputStream = null;
+                                    InputStream inputStream = null;
+                                    try {
+                                        outputFile.createNewFile();
+                                        outputStream = new FileOutputStream(outputFile);
+                                        inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                        encoder = new LZWEncoder(westPanel.dictionaryStrategy.getSelectedIndex(),
+                                                westPanel.dictionarySize.getSelectedIndex() + 9,
+                                                inputStream, outputStream);
+                                        long time0 = System.currentTimeMillis();
+                                        if (westPanel.showGeneratedIndexes.isSelected()) {
 
+                                        } else {
+                                           
+                                        }
+                                        outputStream.flush();
+                                        long timePassed = System.currentTimeMillis() - time0;
+                                        statusBar.leftStatus.setText("Encoded in " + (timePassed / 1000.0) + " seconds.");
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    } finally {
+                                        try {
+                                            outputStream.close();
+                                        } catch (IOException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                        try {
+                                            inputStream.close();
+                                        } catch (IOException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                    }
                                 }));
                     }
                 });
@@ -528,7 +563,7 @@ public class MainFrame extends JFrame {
             private JComboBox dictionarySize =
                     new JComboBox(new String[]{"9", "10", "11", "12", "13", "14", "15"});
             private JComboBox dictionaryStrategy =
-                    new JComboBox(new String[]{"Empty", "Freeze"});
+                    new JComboBox(new String[]{"Freeze", "Empty"});
             private JCheckBox showGeneratedIndexes = new JCheckBox("Show generated indexes");
 
             public WestPanel() {

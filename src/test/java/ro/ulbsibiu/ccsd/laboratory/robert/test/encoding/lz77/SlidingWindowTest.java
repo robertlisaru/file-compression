@@ -1,8 +1,8 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.test.encoding.lz77;
 
 import org.junit.jupiter.api.Test;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.SlidingWindow;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.Token;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.SlidingWindow;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.Token;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

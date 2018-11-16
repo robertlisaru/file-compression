@@ -1,8 +1,8 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.test.encoding.lzw;
 
 import org.junit.jupiter.api.Test;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lzw.Dictionary;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lzw.FreezeStrategyDictionary;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lzw.encoder.Dictionary;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lzw.encoder.FreezeStrategyDictionary;
 
 import java.nio.charset.StandardCharsets;
 
@@ -25,7 +25,7 @@ public class DictionaryTest {
     @Test
     void advancedSearch() {
         Dictionary dictionary = new FreezeStrategyDictionary(9);
-        final byte[] bytes = new String("ABCDABCDABDCABCDABDDCD").getBytes(StandardCharsets.US_ASCII);
+        final byte[] bytes = new String("ABCDABCDABDCABCDABDDCDCD").getBytes(StandardCharsets.US_ASCII);
         //region search expectations array
         int[] searchExpectations = new int[]{
                 'A',
@@ -63,7 +63,9 @@ public class DictionaryTest {
                 'D',
                 263, //DC
                 Dictionary.NULL_INDEX, //DCD
-                'D'
+                'D',
+                263, //DC
+                269 //DCD
         };
         //endregion
 

@@ -1,4 +1,4 @@
-package ro.ulbsibiu.ccsd.laboratory.robert.encoding.huffmanstatic;
+package ro.ulbsibiu.ccsd.laboratory.robert.algorithm.huffmanstatic;
 
 import java.util.Collections;
 import java.util.LinkedList;

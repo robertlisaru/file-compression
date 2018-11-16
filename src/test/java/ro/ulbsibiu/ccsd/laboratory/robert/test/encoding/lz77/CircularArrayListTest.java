@@ -1,7 +1,7 @@
 package ro.ulbsibiu.ccsd.laboratory.robert.test.encoding.lz77;
 
 import org.junit.jupiter.api.Test;
-import ro.ulbsibiu.ccsd.laboratory.robert.encoding.lz77.CircularArrayList;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.CircularArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

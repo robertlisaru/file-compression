@@ -1,10 +1,10 @@
-package ro.ulbsibiu.ccsd.laboratory.robert.encoding.lzw;
+package ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lzw.encoder;
 
 public abstract class Dictionary {
     public static final int EMPTY_PREFIX = -1;
     public static final int NULL_INDEX = -1;
-    private DictionaryEntry[] table;
-    private int size = 256;
+    protected DictionaryEntry[] table;
+    protected int size = 256;
 
     public Dictionary(int nrBitsForIndex) {
         table = new DictionaryEntry[1 << nrBitsForIndex];
@@ -88,4 +88,6 @@ public abstract class Dictionary {
         table[parentIndex].first = size;
         size++;
     }
+
+    public abstract long getHeaderCode();
 }
