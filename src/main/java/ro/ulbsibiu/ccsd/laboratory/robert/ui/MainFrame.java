@@ -6,6 +6,7 @@ import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.huffmanstatic.HuffmanStaticE
 import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.LZ77Decoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.LZ77Encoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lz77.Token;
+import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lzw.decoder.LZWDecoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.algorithm.lzw.encoder.LZWEncoder;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitReader;
 import ro.ulbsibiu.ccsd.laboratory.robert.bitio.BitWriter;
@@ -140,11 +141,15 @@ public class MainFrame extends JFrame {
                         statusBar.rightStatus.setText("File: " + inputFile.getName());
                         huffmanPanel.southPanel.huffmanEncodeButton.setEnabled(true);
                         lz77Panel.southPanel.lz77encodeButton.setEnabled(true);
+                        lzwPanel.southPanel.encodeButton.setEnabled(true);
                         if (FilenameUtils.getExtension(inputFile.getName()).equals("hs")) {
                             huffmanPanel.southPanel.huffmanDecodeButton.setEnabled(true);
                         }
                         if (FilenameUtils.getExtension(inputFile.getName()).equals("lz77")) {
                             lz77Panel.southPanel.lz77decodeButton.setEnabled(true);
+                        }
+                        if (FilenameUtils.getExtension(inputFile.getName()).equals("lzw")) {
+                            lzwPanel.southPanel.decodeButton.setEnabled(true);
                         }
                     }
                 }
@@ -485,6 +490,7 @@ public class MainFrame extends JFrame {
         private WestPanel westPanel = new WestPanel();
         private EastPanel eastPanel = new EastPanel();
         private LZWEncoder encoder;
+        private LZWDecoder decoder;
 
         public LZWPanel() {
             setLayout(new BorderLayout());
@@ -511,17 +517,13 @@ public class MainFrame extends JFrame {
                                     InputStream inputStream = null;
                                     try {
                                         outputFile.createNewFile();
-                                        outputStream = new FileOutputStream(outputFile);
+                                        outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
                                         inputStream = new BufferedInputStream(new FileInputStream(inputFile));
                                         encoder = new LZWEncoder(westPanel.dictionaryStrategy.getSelectedIndex(),
                                                 westPanel.dictionarySize.getSelectedIndex() + 9,
                                                 inputStream, outputStream);
                                         long time0 = System.currentTimeMillis();
-                                        if (westPanel.showGeneratedIndexes.isSelected()) {
-
-                                        } else {
-                                           
-                                        }
+                                        encoder.encode();
                                         outputStream.flush();
                                         long timePassed = System.currentTimeMillis() - time0;
                                         statusBar.leftStatus.setText("Encoded in " + (timePassed / 1000.0) + " seconds.");
@@ -547,7 +549,34 @@ public class MainFrame extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         statusBar.leftStatus.setText("Decoding. Please wait...");
                         EventQueue.invokeLater(new Thread(() -> {
-
+                            File outputFile = new File(FilenameUtils.removeExtension(inputFile.getAbsolutePath())
+                                    + ".lzwd");
+                            OutputStream outputStream = null;
+                            InputStream inputStream = null;
+                            try {
+                                outputFile.createNewFile();
+                                outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                                inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+                                decoder = new LZWDecoder(inputStream, outputStream);
+                                long time0 = System.currentTimeMillis();
+                                statusBar.leftStatus.setText("Decoding. Please wait...");
+                                decoder.decode();
+                                long timePassed = System.currentTimeMillis() - time0;
+                                statusBar.leftStatus.setText("Decoded in " + (timePassed / 1000.0) + " seconds.");
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            } finally {
+                                try {
+                                    outputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                try {
+                                    inputStream.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
                         }));
                     }
                 });
