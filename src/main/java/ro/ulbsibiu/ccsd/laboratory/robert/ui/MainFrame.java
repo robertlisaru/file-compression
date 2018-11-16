@@ -523,7 +523,19 @@ public class MainFrame extends JFrame {
                                                 westPanel.dictionarySize.getSelectedIndex() + 9,
                                                 inputStream, outputStream);
                                         long time0 = System.currentTimeMillis();
-                                        encoder.encode();
+                                        if (westPanel.showGeneratedIndexes.isSelected()) {
+                                            encoder.writeHeader();
+                                            long nextIndex = encoder.nextIndex();
+                                            while (nextIndex != -1) {
+                                                Vector row = new Vector();
+                                                row.add(nextIndex);
+                                                eastPanel.indexesTableModel.addRow(row);
+                                                nextIndex = encoder.nextIndex();
+                                            }
+                                            encoder.flush();
+                                        } else {
+                                            encoder.encode();
+                                        }
                                         outputStream.flush();
                                         long timePassed = System.currentTimeMillis() - time0;
                                         statusBar.leftStatus.setText("Encoded in " + (timePassed / 1000.0) + " seconds.");

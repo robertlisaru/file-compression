@@ -11,6 +11,7 @@ public class LZWEncoder {
     private InputStream inputStream;
     private Dictionary dictionary;
     private int numBitsForIndex;
+    private int previousReadByte;
 
     public LZWEncoder(int dictinoaryType, int numBitsForIndex, InputStream inputStream, OutputStream outputStream) {
         bitWriter = new BitWriter(outputStream);
@@ -18,6 +19,12 @@ public class LZWEncoder {
         dictionary = dictinoaryType == 0 ? new FreezeStrategyDictionary(numBitsForIndex)
                 : new EmptyStrategyDictionary(numBitsForIndex);
         this.numBitsForIndex = numBitsForIndex;
+    }
+
+    public void writeHeader() throws IOException {
+        bitWriter.writeBit((int) dictionary.getHeaderCode());
+        bitWriter.writeNBitValue(numBitsForIndex, 4);
+        previousReadByte = inputStream.read();
     }
 
     public void encode() throws IOException {
@@ -34,6 +41,25 @@ public class LZWEncoder {
             }
             bitWriter.writeNBitValue(prefix, numBitsForIndex);
         } while (readByte != -1);
+        bitWriter.flush();
+    }
+
+    public long nextIndex() throws IOException {
+        if (previousReadByte == -1) {
+            return -1;
+        }
+        int index;
+        int prefix = Dictionary.EMPTY_PREFIX;
+        while (previousReadByte != -1
+                && (index = dictionary.search(prefix, (byte) previousReadByte)) != Dictionary.NULL_INDEX) {
+            prefix = index;
+            previousReadByte = inputStream.read();
+        }
+        bitWriter.writeNBitValue(prefix, numBitsForIndex);
+        return prefix;
+    }
+
+    public void flush() throws IOException {
         bitWriter.flush();
     }
 }
